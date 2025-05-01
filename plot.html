@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shapefile Visualization</title>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 500px; }
+        canvas { max-width: 400px; }
+    </style>
+</head>
+<body>
+    <h2>Shapefile Visualization</h2>
+    <div id="map"></div>
+    <canvas id="myChart"></canvas>
+
+    <script>
+        const map = L.map('map').setView([0, 0], 2); // Default view
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        const shapefiles = {
+            "combined_constraints": "red",
+            "infrastructure_boundary": "blue",
+            "project_boundary": "green"
+        };
+
+        const chartData = [];
+
+        // Function to fetch and display GeoJSON
+        async function loadShapefile(name, color) {
+            const response = await fetch(`http://127.0.0.1:5000/get_geojson/${name}`);
+            const geojson = await response.json();
+
+            const layer = L.geoJSON(JSON.parse(geojson), {
+                style: { color }
+            }).addTo(map);
+
+            map.fitBounds(layer.getBounds());
+
+            // Extracting Data for Chart.js
+            const featureCount = JSON.parse(geojson).features.length;
+            chartData.push({ label: name, value: featureCount });
+
+            updateChart();
+        }
+
+        // Load all shapefiles
+        for (const [name, color] of Object.entries(shapefiles)) {
+            loadShapefile(name, color);
+        }
+
+        // Chart.js Setup
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: [], datasets: [{ label: 'Feature Count', data: [], backgroundColor: ['red', 'blue', 'green'] }] }
+        });
+
+        function updateChart() {
+            chart.data.labels = chartData.map(d => d.label);
+            chart.data.datasets[0].data = chartData.map(d => d.value);
+            chart.update();
+        }
+    </script>
+</body>
+</html>
