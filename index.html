@@ -290,7 +290,7 @@
     document.getElementById('sendButton').addEventListener('click', ()=>{
       const dict1 = Object.fromEntries(dictsend);
       const dict2 = Object.fromEntries(dictconst);
-      fetch('http://127.0.0.1:5000/receive_dicts', {
+      fetch('http://34.10.27.237:5000/receive_dicts', {
         method: 'POST',
         headers: { 'Content-Type':'application/json' },
         body: JSON.stringify({ dict1, dict2 })

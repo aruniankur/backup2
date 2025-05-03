@@ -181,7 +181,7 @@
       }).addTo(map);
 
       // 2. Draw GeoJSON sections
-      fetch('http://127.0.0.1:5000/getgeojson')
+      fetch('http://34.10.27.237:5000/getgeojson')
         .then(r => r.ok ? r.json() : Promise.reject(r.statusText))
         .then(data => {
           const secLayers = [];
@@ -299,10 +299,10 @@
 
       // 6. Fetch routes
       Promise.all([
-        fetch('http://127.0.0.1:5000/getroadinfo', {
+        fetch('http://34.10.27.237:5000/getroadinfo', {
           method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'
         }).then(r=>r.ok?r.json():Promise.reject(r.statusText)),
-        fetch('http://127.0.0.1:5000/getwireinfo', {
+        fetch('http://34.10.27.237:5000/getwireinfo', {
           method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'
         }).then(r=>r.ok?r.json():Promise.reject(r.statusText))
       ])
